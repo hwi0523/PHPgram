@@ -1,5 +1,9 @@
 <?php
 
+    function getParam($key){
+        return isset($_GET[$key]) ? $_GET[$key] : "";
+    }
+
     function getUrl() {
         return isset($_GET['url']) ? rtrim($_GET['url'], '/') : "";
     }
@@ -9,8 +13,7 @@
     }
 
     function getMethod() {
-        $headers = getallheaders();
-        return $headers['Accept'];
+        return $_SERVER['REQUEST_METHOD'];
     }
 
     function isGetOne() {
