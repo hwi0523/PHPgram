@@ -1,10 +1,12 @@
 <?php
 namespace application\controllers;
 
+use application\libs\Application;
+
 class FeedController extends Controller {
     public function index() {
-        $this->addAttribute(_JS, ["feed/index","https://unpkg.com/swiper@8/swiper-bundle.min.js"]);
-        $this->addAttribute(_CSS, ["feed/index","https://unpkg.com/swiper@8/swiper-bundle.min.css"]);
+        $this->addAttribute(_JS, ["feed/index", "https://unpkg.com/swiper@8/swiper-bundle.min.js"]);        
+        $this->addAttribute(_CSS, ["feed/index", "https://unpkg.com/swiper@8/swiper-bundle.min.css"]);        
         $this->addAttribute(_MAIN, $this->getView("feed/index.php"));
         return "template/t1.php";
     }
@@ -20,7 +22,7 @@ class FeedController extends Controller {
                     "location" => $_POST["location"],
                     "ctnt" => $_POST["ctnt"],
                     "iuser" => $iuser
-                ];
+                ];                
                 $ifeed = $this->model->insFeed($param);
 
                 $paramImg = [ "ifeed" => $ifeed ];
@@ -52,29 +54,31 @@ class FeedController extends Controller {
                 $param = [
                     "startIdx" => $startIdx,
                     "iuser" => getIuser()
-                ];                
-                $list = $this->model->selFeedList($param);
-                foreach($list as $item){
-                    $item->imgList=$this->model->selFeedImgList($item);
-                }
+                ];
+                $list = $this->model->selFeedList($param);                
+                foreach($list as $item) {                 
+                    $item->imgList = $this->model->selFeedImgList($item);
+                    $param2 = ["ifeed" => $item-> ifeed];
+                    $item->cmt = Application::getModel("feedcmt")->selFeedCmt($param2);
+                }                
                 return $list;
         }
     }
-    public function fav(){
-        $urlpaths =getUrlPaths();
-        if(!isset($urlpaths[2])){
+
+    public function fav() {
+        $urlPaths = getUrlPaths();
+        if(!isset($urlPaths[2])) {
             exit();
         }
-        $param =[
-            "ifeed"=> intval($urlpaths[2]),
-            "iuser"=> getIuser() // 2
+        $param = [
+            "ifeed" => intval($urlPaths[2]),
+            "iuser" => getIuser()
         ];
-
-        switch(getMethod()){
-            case _POST:
-                return["result"=>$this->model->insFeedFav($param)];
+        switch(getMethod()) {
+            case _POST:                
+                return [_RESULT => $this->model->insFeedFav($param)];
             case _DELETE:
-                return["result"=>$this->model->delFeedFav($param)];
+                return [_RESULT => $this->model->delFeedFav($param)];
         }
     }
 }
