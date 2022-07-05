@@ -72,11 +72,13 @@ class UserController extends Controller {
             $startIdx = ($page - 1) * _FEED_ITEM_CNT;
             $param = [
                 "startIdx" => $startIdx,
-                "iuser" => $_GET["iuser"]
-            ];        
+                "iuser" => $_GET["iuser"],
+                "loginiuser" => getIuser()
+            ];
             $list = $this->model->selFeedList($param);
-            foreach($list as $item) {                 
-                $item->imgList = Application::getModel("feed")->selFeedImgList($item);
+            foreach($list as $item) {
+                $param2 = ["ifeed" => $item-> ifeed];
+                $item->imgList = Application::getModel("feed")->selFeedImgList($param2);
             }
             return $list;
         }

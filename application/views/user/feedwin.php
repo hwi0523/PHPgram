@@ -1,11 +1,11 @@
-<div id="gData" data-toiuser="<?=$this->data->iuser?>"></div>
+<div id="lData" data-toiuser="<?=$this->data->iuser?>"></div>
 <div class="d-flex flex-column align-items-center">
     <div class="size_box_100"></div>
     <div class="w100p_mw614">
         <div class="d-flex flex-row">    
             <div class="d-flex flex-column justify-content-center me-3">
                 <div class="circleimg h150 w150 pointer feedwin">
-                    <img data-bs-toggle="modal" data-bs-target="#profileImgModal" src='/static/img/profile/<?=$this->data->iuser?>/<?=$this->data->mainimg?>' onerror='this.error=null;this.src="/static/img/profile/defaultImg.png"'>
+                    <img data-bs-toggle="modal" data-bs-target="#profileImgModal" src='/static/img/profile/<?=$this->data->iuser?>/<?=$this->data->mainimg?>' onerror='this.error=null;this.src="/static/img/profile/te.png"'>
                 </div>
             </div>
             <div class="flex-grow-1 d-flex flex-column justify-content-evenly">
@@ -30,7 +30,7 @@
                 </div>
                 <div class="d-flex flex-row">
                     <div class="flex-grow-1 me-3">게시물 <span class="bold"><?=$this->data->feedcnt?></span></div>
-                    <div class="flex-grow-1 me-3">팔로워 <span class="bold"><?=$this->data->followerCnt?></span></div>
+                    <div class="flex-grow-1 me-3">팔로워 <span class="bold" id="spanfollow"><?=$this->data->followerCnt?></span></div>
                     <div class="flex-grow-1">팔로우 <span class="bold"><?=$this->data->followCnt?></span></div>
                 </div>
                 <div class="bold"><?=$this->data->nm?></div>
