@@ -1,30 +1,19 @@
-const url = new URL(location.href);
-
-function getFeedList() {    
-    if(!feedObj) { return; }
-    feedObj.showLoading();            
-    const param = {
-        page: feedObj.currentPage++,        
-        iuser: url.searchParams.get('iuser')
-    }
-    fetch('/user/feed' + encodeQueryString(param))
-    .then(res => res.json())
-    .then(list => {                
-        feedObj.makeFeedList(list);                
-    })
-    .catch(e => {
-        console.error(e);
-        feedObj.hideLoading();
-    });
+if(feedObj){
+    const url = new URL(location.href);
+    feedObj.iuser = parseInt(url.searchParams.get('iuser'));
+    feedObj.getFeedUrl = '/user/feed';
+    feedObj.getFeedList();
 }
-getFeedList();
-
 
 (function() {
     const lData = document.querySelector('#lData');
     const btnFollow = document.querySelector('#btnFollow');
     const spanfollow = document.querySelector('#spanfollow');
-    let follownum = parseInt(spanfollow.innerText); 
+    const btnDelCurrentProfilePic = document.querySelector('#btnDelCurrentProfilePic');
+    const btnProfileImgModalClose = document.querySelector('#btnProfileImgModalClose');
+    const modalProfileImg = document.querySelector('#profileImgModal');
+    const FrmProfileImg = modalProfileImg.querySelector('form');
+    let follownum = parseInt(spanfollow.innerText);
     if(btnFollow) {
         btnFollow.addEventListener('click', function() {
             const param = {
@@ -73,5 +62,48 @@ getFeedList();
             }
         });
     }
+    if(btnDelCurrentProfilePic){
+        btnDelCurrentProfilePic.addEventListener('click', e=>{
+            fetch('/user/profile',{method: 'DELETE'})
+            .then(res=> res.json())
+            .then(res=>{
+                if(res.result){
+                    console.log(res.result);
+                    const profileImgList = document.querySelectorAll('.profileimg');
+                    profileImgList.forEach(item=>{
+                        item.src='/static/img/profile/Te.png';
+                    })
+                }
+                btnProfileImgModalClose.click();
+            });
+        });
+    }
 
+    if(btnInsProfilePic){
+        btnInsProfilePic.addEventListener('click', e => {
+                FrmProfileImg.imgs.click();
+        });
+
+        FrmProfileImg.imgs.addEventListener('change', e => {
+            if(e.target.files.length){
+                const fData = new FormData();
+                fData.append('profileImg', e.target.files[0]);
+                fetch('/user/profile', {
+                    method: 'post',
+                    body: fData
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if(res.result){
+                        const gData = document.querySelector('#gData');
+                        const profileImgList = document.querySelectorAll('.profileimg');
+                        profileImgList.forEach(item => {
+                            item.src = `/static/img/profile/${gData.dataset.loginiuser}/${res.fileNm}`;
+                        });
+                        btnProfileImgModalClose.click();
+                    }
+                });
+            }
+        });
+    }
 })();

@@ -13,7 +13,7 @@ class Application{
 
     public function __construct() {        
         $urlPaths = getUrlPaths();
-        $controller = isset($urlPaths[0]) && $urlPaths[0] != '' ? $urlPaths[0] : 'board';
+        $controller = isset($urlPaths[0]) && $urlPaths[0] != '' ? $urlPaths[0] : 'feed';
         $action = isset($urlPaths[1]) && $urlPaths[1] != '' ? $urlPaths[1] : 'index';
 
         if (!file_exists('application/controllers/'. $controller .'Controller.php')) {
@@ -21,13 +21,8 @@ class Application{
             exit();
         }
 
-        if(!in_array($controller, static::$modelList)) {
-            $modelName = 'application\models\\' . $controller . 'model';
-            static::$modelList[$controller] = new $modelName();
-        }
-
         $controllerName = 'application\controllers\\' . $controller . 'controller';                
-        $model = static::$modelList[$controller];
+        $model = $this->getModel($controller);
         new $controllerName($action, $model);
     }
 

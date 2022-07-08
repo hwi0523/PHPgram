@@ -3,6 +3,39 @@ const feedObj = {
     itemLength: 0,
     currentPage: 1,
     swiper: null,
+    getFeedUrl: '',
+    iuser: 0,
+    setScrollInfinity: function(){
+        window.addEventListener('scroll', e=> {
+            const {
+                scrollTop,
+                scrollHeight,
+                clientHeight
+            } = document.documentElement;
+
+            if(scrollTop + clientHeight >= scrollHeight -5 && this.itemLength === this.limit){
+                this.getFeedList();
+            }
+        },{passive: true});
+    },
+    getFeedList: function(){
+        this.itemLength =0;
+        this.showLoading();            
+    const param = {
+        page: this.currentPage++,        
+        iuser: this.iuser
+    }
+    fetch(this.getFeedUrl + encodeQueryString(param))
+    .then(res => res.json())
+    .then(list => {             
+        this.itemLength = list.length;   
+        this.makeFeedList(list);                
+    })
+    .catch(e => {
+        console.error(e);
+        this.hideLoading();
+    });
+    },
     refreshSwipe: function() {
         if(this.swiper !== null) { this.swiper = null; }
         this.swiper = new Swiper('.swiper', {
@@ -35,10 +68,10 @@ const feedObj = {
     makeCmtItem: function(item) {
         const divCmtItemContainer = document.createElement('div');
         divCmtItemContainer.className = 'd-flex flex-row align-items-center mb-2';
-        const src = '/static/img/profile/' + (item.writerimg ? `${item.iuser}/${item.writerimg}` : 'defaultProfileImg_100.png');
+        const src = '/static/img/profile/' + (item.writerimg ? `${item.iuser}/${item.writerimg}` : 'Te.png');
         divCmtItemContainer.innerHTML = `
             <div class="circleimg h24 w24 me-1">
-                <img src="${src}" class="profile w24 pointer">                
+                <img src="${src}" class="profileimg profile w24 pointer">                
             </div>
             <div class="d-flex flex-row">
                 <div class="pointer me-2">${item.writer} - <span class="rem0_8">${getDateTimeInfo(item.regdt)}</span></div>
@@ -71,8 +104,8 @@ const feedObj = {
 
         const regDtInfo = getDateTimeInfo(item.regdt);
         divTop.className = 'd-flex flex-row ps-3 pe-3';
-        const writerImg = `<img src='/static/img/profile/${item.iuser}/${item.mainimg}' 
-            onerror='this.error=null;this.src="/static/img/profile/defaultProfileImg_100.png"'>`;
+        const writerImg = `<img class="profileimg" src='/static/img/profile/${item.iuser}/${item.mainimg}' 
+            onerror='this.error=null;this.src="/static/img/profile/te.png"'>`;
 
         divTop.innerHTML = `
             <div class="d-flex flex-column justify-content-center">
@@ -121,6 +154,26 @@ const feedObj = {
         divBtns.appendChild(heartIcon);
         heartIcon.className = 'fa-heart pointer rem1_5 me-3';
         heartIcon.classList.add(item.isFav === 1 ? 'fas' : 'far');
+        
+        
+        const divDm = document.createElement('div');
+        divBtns.appendChild(divDm);
+        divDm.className = 'pointer';
+        divDm.innerHTML = `<svg aria-label="다이렉트 메시지" class="_8-yf5 " color="#262626" fill="#262626" height="24" role="img" viewBox="0 0 24 24" width="24"><line fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2" x1="22" x2="9.218" y1="3" y2="10.083"></line><polygon fill="none" points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></polygon></svg>`;
+        divDm.addEventListener('click',e=>{
+            location.href =`/dm/index?oppoiuser=${item.iuser}`;
+        });
+        
+        const divFav = document.createElement('div');
+        divContainer.appendChild(divFav);
+        divFav.className = 'p-3 d-none';
+        const spanFavCnt = document.createElement('span');
+        divFav.appendChild(spanFavCnt);
+        spanFavCnt.className = 'bold';
+        spanFavCnt.innerHTML = `좋아요 ${item.favCnt}개`;
+        let favCnt = parseInt(item.favCnt);
+        if(item.favCnt > 0) { divFav.classList.remove('d-none'); }
+        
         heartIcon.addEventListener('click', e => {
             
             let method = 'POST';
@@ -137,9 +190,19 @@ const feedObj = {
                     if(item.isFav === 0) { // 좋아요 취소
                         heartIcon.classList.remove('fas');
                         heartIcon.classList.add('far');
+                        favCnt = favCnt -1;
+                        spanFavCnt.innerHTML = `좋아요 ${favCnt}개`;
+                        if(favCnt === 0){
+                            divFav.classList.add('d-none');
+                        }
                     } else { // 좋아요 처리
                         heartIcon.classList.remove('far');
                         heartIcon.classList.add('fas');
+                        favCnt = favCnt +1;
+                        spanFavCnt.innerHTML = `좋아요 ${favCnt}개`;
+                        if(favCnt > 0 ){
+                            divFav.classList.remove('d-none');
+                        }
                     }
                 } else {
                     alert('좋아요를 할 수 없습니다.');
@@ -150,21 +213,6 @@ const feedObj = {
             });
         });
 
-
-        const divDm = document.createElement('div');
-        divBtns.appendChild(divDm);
-        divDm.className = 'pointer';
-        divDm.innerHTML = `<svg aria-label="다이렉트 메시지" class="_8-yf5 " color="#262626" fill="#262626" height="24" role="img" viewBox="0 0 24 24" width="24"><line fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2" x1="22" x2="9.218" y1="3" y2="10.083"></line><polygon fill="none" points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></polygon></svg>`;
-
-        const divFav = document.createElement('div');
-        divContainer.appendChild(divFav);
-        divFav.className = 'p-3 d-none';
-        const spanFavCnt = document.createElement('span');
-        divFav.appendChild(spanFavCnt);
-        spanFavCnt.className = 'bold';
-        spanFavCnt.innerHTML = `좋아요 ${item.favCnt}개`;
-
-        if(item.favCnt > 0) { divFav.classList.remove('d-none'); }
 
         if(item.ctnt !== null && item.ctnt !== '') {
             const divCtnt = document.createElement('div');
@@ -238,7 +286,8 @@ const feedObj = {
     },
 
     showLoading: function() { this.loadingElem.classList.remove('d-none'); },
-    hideLoading: function() { this.loadingElem.classList.add('d-none'); }
+    hideLoading: function() { this.loadingElem.classList.add('d-none'); },
+    isLoading: function() {return ! this.loadingElem.classList.contains('d-none');}
 
 }
 
@@ -310,13 +359,21 @@ function moveToFeedWin(iuser) {
                                 const feedItem = feedObj.makeFeedItem(myJson);
                                 feedObj.containerElem.prepend(feedItem);
                                 feedObj.refreshSwipe();
+                                window.scroll(0,0);
+                           }
+                           // 게시물 수 올리기
+                           if(spancnt){
+                            const spancnt = document.querySelector('#spancnt');
+                            let cnt = parseInt(spancnt.innerText);
+                                cnt = cnt +1;
+                                spancnt.innerText = cnt;
                            }
                         });
                         
                 });
             }
         });
-
+        // 게시물 올리기
         btnNewFeedModal.addEventListener('click', function() {
             const selFromComBtn = document.createElement('button');
             selFromComBtn.type = 'button';

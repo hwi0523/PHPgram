@@ -79,6 +79,7 @@ class UserController extends Controller {
             foreach($list as $item) {
                 $param2 = ["ifeed" => $item-> ifeed];
                 $item->imgList = Application::getModel("feed")->selFeedImgList($param2);
+                $item->cmt = Application::getModel("feedcmt")->selFeedCmt($param2);
             }
             return $list;
         }
@@ -98,6 +99,56 @@ class UserController extends Controller {
             case _DELETE:        
                 $param["toiuser"] = $_GET["toiuser"];
                 return [_RESULT => $this->model->delUserFollow($param)];
+        }
+    }
+
+    public function profile(){
+        switch(getMethod()){
+            case _DELETE:
+                $loginUser = getLoginUser();
+                if($loginUser){
+                    $path ="static/img/profile/{$loginUser->iuser}/{$loginUser->mainimg}";
+                    if(file_exists($path) && unlink($path)){
+                        $param =["iuser"=> $loginUser->iuser, "delMainImg" => 1];
+                        if($this->model->updUser($param)){
+                            $loginUser->mainimg = null;
+                            return [_RESULT => 1];
+                        }
+                    }
+                }
+                return [_RESULT => 0];
+
+                
+                case _POST:
+                    if(!isset($_FILES["profileImg"])){
+                        return [_RESULT => 0];
+                    }
+    
+                    $loginUser = getLoginUser();
+                    if($loginUser){
+                        $path = "static/img/profile/{$loginUser->iuser}";
+                        if(!is_dir($path)){
+                            mkdir($path, 0777, true);
+                        }
+                        if($loginUser->mainimg){
+                            $savedImg = $path . "/" . $loginUser->mainimg;
+                            if(file_exists($savedImg)){
+                                unlink($savedImg);
+                            }
+                        }
+    
+                        $tempName = $_FILES["profileImg"]["tmp_name"];
+                        $randomFileNm = getRandomFileNm($_FILES["profileImg"]["name"]);
+                        $param = [
+                            "iuser" => $loginUser->iuser,
+                            "mainimg" => $randomFileNm
+                        ];
+                        if(move_uploaded_file($tempName, $path . "/" . $randomFileNm)){
+                            $this->model->updUser($param);
+                            $loginUser->mainimg = $randomFileNm;
+                            return [_RESULT => 1, "fileNm" => $randomFileNm];
+                        }
+                    }
         }
     }
 }

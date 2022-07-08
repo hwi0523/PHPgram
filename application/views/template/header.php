@@ -19,14 +19,18 @@
                             </a>
                         </div>
                         <div class="d-inline-flex me-3">
-                            <a href="/dm/index">
-                                <svg aria-label="다이렉트 메시지" class="_8-yf5 " color="#262626" fill="#262626" height="24" role="img" viewBox="0 0 24 24" width="24"><line fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2" x1="22" x2="9.218" y1="3" y2="10.083"></line><polygon fill="none" points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></polygon></svg>
-                            </a>
+                            <span class="position-relative">                                
+                                <svg id="dmIcon" aria-label="다이렉트 메시지" class="_8-yf5 pointer" color="#262626" fill="#262626" height="24" role="img" viewBox="0 0 24 24" width="24"><line fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2" x1="22" x2="9.218" y1="3" y2="10.083"></line><polygon fill="none" points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></polygon></svg>                                
+                                <span id="totalDmUnreadCntParent" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                                    <span id="totalDmUnreadCnt">0</span>
+                                    <span class="visually-hidden">unread messages</span>
+                                </span>
+                            </span>
                         </div>                    
                         <div class="d-inline-flex dropdown">
                             <a href="#" role="button" id="navDropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false" class="header_profile">
                                 <div class="circleimg h30 w30">
-                                    <img src="/static/img/profile/<?=getMainImgSrc()?>" onerror="this.onerror=null;this.src='/static/img/profile/te.png'">
+                                    <img class="profileimg" src="/static/img/profile/<?=getMainImgSrc()?>" onerror="this.onerror=null;this.src='/static/img/profile/te.png'">
                                 </div>
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navDropdownMenuLink">
@@ -46,6 +50,7 @@
         </div>
     </header>
 </div>
+
 <!-- New Feed Create Modal -->
 <div class="modal fade" id="newFeedModal" tabindex="-1" aria-labelledby="newFeedModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
@@ -61,4 +66,5 @@
             <input type="file" accept="image/*" name="imgs" multiple>
         </form>
     </div>
+</div>
 </div>

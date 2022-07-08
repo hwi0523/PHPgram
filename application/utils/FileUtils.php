@@ -1,5 +1,7 @@
 <?php
-
+function delFile($path){
+    
+}
 function getExt($fileName){
     // $arr = explode(".", $fileName);
     // return end($arr);

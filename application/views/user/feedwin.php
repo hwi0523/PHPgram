@@ -5,7 +5,7 @@
         <div class="d-flex flex-row">    
             <div class="d-flex flex-column justify-content-center me-3">
                 <div class="circleimg h150 w150 pointer feedwin">
-                    <img data-bs-toggle="modal" data-bs-target="#profileImgModal" src='/static/img/profile/<?=$this->data->iuser?>/<?=$this->data->mainimg?>' onerror='this.error=null;this.src="/static/img/profile/te.png"'>
+                    <img class="profileimg" data-bs-toggle="modal" data-bs-target="#profileImgModal" src='/static/img/profile/<?=$this->data->iuser?>/<?=$this->data->mainimg?>' onerror='this.error=null;this.src="/static/img/profile/Te.png"'>
                 </div>
             </div>
             <div class="flex-grow-1 d-flex flex-column justify-content-evenly">
@@ -29,7 +29,7 @@
 
                 </div>
                 <div class="d-flex flex-row">
-                    <div class="flex-grow-1 me-3">게시물 <span class="bold"><?=$this->data->feedcnt?></span></div>
+                    <div class="flex-grow-1 me-3">게시물 <span class="bold" id="spancnt"><?=$this->data->feedcnt?></span></div>
                     <div class="flex-grow-1 me-3">팔로워 <span class="bold" id="spanfollow"><?=$this->data->followerCnt?></span></div>
                     <div class="flex-grow-1">팔로우 <span class="bold"><?=$this->data->followCnt?></span></div>
                 </div>
@@ -46,18 +46,21 @@
 <div class="modal fade" id="profileImgModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
-            <div class="modal-header justify-content-center p-4">
-                <h5 class="modal-title fw-bold">프로필 사진 바꾸기</h5>
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title bold">프로필 사진 바꾸기</h5>
             </div>
-            <div class="modal-body p-0 pt-3 pb-3" id="id-modal-body">
-                <a href="#"><div class="text-center text-primary fw-bold">사진 업로드</div></a><hr>
-                <a href="#"><div class="text-center text-danger fw-bold">현재 사진 삭제</div></a><hr>
-                <div class="text-center pointer" data-bs-dismiss="modal">취소</div>
+            <div id="uploadImg" class="text-center">
+                    <span id="btnInsProfilePic" class="text-primary fw-bold pointer">사진 업로드</span>
+            </div>
+            <div class="_modal_item">
+                <span id="btnDelCurrentProfilePic" class="c_error-or-destructive bold pointer">현재 사진 삭제</span>
+            </div>
+            <div class="_modal_item">
+                <span class="pointer" id="btnProfileImgModalClose" data-bs-dismiss="modal">취소</span>
             </div>
         </div>
-
         <form class="d-none">
-            <input type="file" accept="image/*" name="imgs" multiple>
+            <input type="file" accept="image/*" name="imgs">
         </form>
     </div>
 </div>
